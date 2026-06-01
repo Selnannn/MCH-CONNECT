@@ -1,0 +1,146 @@
+// ====== 1. STYLES & SEED DATA ======
+const styles = `
+<style>
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(8px); } 
+  to { opacity: 1; transform: none; } 
+}
+.tab-row { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+`;
+
+const MOTHERS_DATA = [
+  { id: "M001", name: "Rifkatu Danladi", dob: "1994-05-12", phone: "08031234567", status: "High Risk", edd: "2026-08-20" }
+];
+
+const CHILDREN_DATA = [
+  { id: "C001", name: "Baby Danladi", dob: "2026-01-08", motherId: "M001", sex: "F", weight: "3.2kg" }
+];
+
+const ALERTS = [
+  { level: "high", icon: "⚠️", name: "Rifkatu Danladi", desc: "BP 150/95 – High-risk ANC follow-up required" }
+];
+
+const VACCINES = ["BCG", "OPV0", "OPV1", "Penta1", "Penta2", "Penta3", "PCV1", "PCV2", "PCV3", "Rota1", "Rota2", "Measles", "YF"];
+
+const STATS = [
+  { icon: "👥", label: "Registered Mothers", val: 127, change: "+4 this week", color: "var(--primary)" }
+];
+
+// ====== 2. HELPERS & MODALS ======
+const avatarColor = (name) => {
+  const colors = ['#2563eb', '#7c3aed', '#db2777', '#059669', '#ea580c'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+};
+
+function AddMotherModal({ onClose, onAdd }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <h3>Register New Mother</h3>
+        {/* Form fields go here */}
+        <button onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function ChildDetail({ child, onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content">
+        <h3>{child.name}'s Health Profile</h3>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+function MotherDetail({ mother, children, onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="vitals-row" style={{ marginBottom: '16px' }}>
+          <div className="vital-chip">EDD: {mother.edd}</div>
+        </div>
+        <div className="tab-row">
+          {["anc", "details", "timeline"].map(t => (
+            <button key={t} onClick={() => {}}>{t.toUpperCase()}</button>
+          ))}
+        </div>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+// ====== 3. MAIN DASHBOARD PAGE ======
+function DashboardPage({ onNavigate }) {
+  return (
+    <div className="fade-in">
+      <div className="grid-2" style={{ marginBottom: '20px' }}>
+        <div className="card">
+          <div className="card-title">Monthly Overview – June 2026</div>
+        </div>
+        <div className="card">
+          <div className="card-title">Upcoming Appointments – Next 7 Days</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ====== 4. MOTHERS MANAGEMENT PAGE ======
+function MothersPage() {
+  const [search, setSearch] = React.useState("");
+  const [showAdd, setShowAdd] = React.useState(false);
+
+  const filtered = MOTHERS_DATA.filter(m => 
+    m.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="fade-in">
+      <div className="section-hd">
+        <h2>Maternal Health Registry</h2>
+        <button onClick={() => setShowAdd(true)}>+ Register Mother</button>
+      </div>
+      <div className="card">
+        <table className="data-table">
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>EDD</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {filtered.map(m => (
+              <tr key={m.id}><td>{m.id}</td><td>{m.name}</td><td>{m.edd}</td><td>{m.status}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {showAdd && <AddMotherModal onClose={() => setShowAdd(false)} onAdd={() => {}} />}
+    </div>
+  );
+}
+
+// ====== 5. CHILDREN MANAGEMENT PAGE ======
+function ChildrenPage() {
+  const [search, setSearch] = React.useState("");
+  const filtered = CHILDREN_DATA.filter(c => 
+    c.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="fade-in">
+      <div className="section-hd">
+        <h2>Child Health Registry</h2>
+      </div>
+      <div className="card">
+        {/* Children data table mapping */}
+      </div>
+    </div>
+  );
+}
