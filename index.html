@@ -1,146 +1,98 @@
-// ====== 1. STYLES & SEED DATA ======
-const styles = `
-<style>
-@keyframes fadeIn { 
-  from { opacity: 0; transform: translateY(8px); } 
-  to { opacity: 1; transform: none; } 
-}
-.tab-row { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
-.empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
-.chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
-</style>
-`;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCH Connect</title>
+    <!-- React and Tailwind CSS Libraries (The Translators) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
 
-const MOTHERS_DATA = [
-  { id: "M001", name: "Rifkatu Danladi", dob: "1994-05-12", phone: "08031234567", status: "High Risk", edd: "2026-08-20" }
-];
+    <!-- This is where your app will load -->
+    <div id="root"></div>
 
-const CHILDREN_DATA = [
-  { id: "C001", name: "Baby Danladi", dob: "2026-01-08", motherId: "M001", sex: "F", weight: "3.2kg" }
-];
+    <!-- The special text/babel type tells the browser to run this as a working app -->
+    <script type="text/babel">
 
-const ALERTS = [
-  { level: "high", icon: "⚠️", name: "Rifkatu Danladi", desc: "BP 150/95 – High-risk ANC follow-up required" }
-];
+        // ====== 1. STYLES & SEED DATA ======
+        const MOTHERS_DATA = [
+            { id: "M001", name: "Rifkatu Danladi", dob: "1994-05-12", phone: "08031234567", status: "High Risk", edd: "2026-08-20" }
+        ];
 
-const VACCINES = ["BCG", "OPV0", "OPV1", "Penta1", "Penta2", "Penta3", "PCV1", "PCV2", "PCV3", "Rota1", "Rota2", "Measles", "YF"];
+        const CHILDREN_DATA = [
+            { id: "C001", name: "Baby Danladi", dob: "2026-01-08", motherId: "M001", sex: "F", weight: "3.2kg" }
+        ];
 
-const STATS = [
-  { icon: "👥", label: "Registered Mothers", val: 127, change: "+4 this week", color: "var(--primary)" }
-];
+        const ALERTS = [
+            { level: "high", icon: "⚠️", name: "Rifkatu Danladi", desc: "BP 150/95 - High-risk ANC follow-up required" }
+        ];
 
-// ====== 2. HELPERS & MODALS ======
-const avatarColor = (name) => {
-  const colors = ['#2563eb', '#7c3aed', '#db2777', '#059669', '#ea580c'];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return colors[Math.abs(hash) % colors.length];
-};
+        const VACCINES = ["BCG", "OPV0", "OPV1", "PCV1", "Penta1", "Rota1", "OPV2", "PCV2", "Penta2", "Rota2", "OPV3", "PCV3", "Penta3", "Rota3", "Measles1", "YF", "Measles2"];
 
-function AddMotherModal({ onClose, onAdd }) {
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <h3>Register New Mother</h3>
-        {/* Form fields go here */}
-        <button onClick={onClose}>Cancel</button>
-      </div>
-    </div>
-  );
-}
+        const STATS = [
+            { icon: "👥", label: "Registered Mothers", val: 127, change: "+4 this week" }
+        ];
 
-function ChildDetail({ child, onClose }) {
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content">
-        <h3>{child.name}'s Health Profile</h3>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-}
+        // ====== 2. APP COMPONENT ======
+        function App() {
+            return (
+                <div class="p-6 max-w-4xl mx-auto">
+                    <header class="mb-8 border-b pb-4">
+                        <h1 class="text-3xl font-bold text-blue-600">🤰 Maternal Health Registry</h1>
+                        <p class="text-gray-500">Monthly Overview — June 2026</p>
+                    </header>
 
-function MotherDetail({ mother, children, onClose }) {
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="vitals-row" style={{ marginBottom: '16px' }}>
-          <div className="vital-chip">EDD: {mother.edd}</div>
-        </div>
-        <div className="tab-row">
-          {["anc", "details", "timeline"].map(t => (
-            <button key={t} onClick={() => {}}>{t.toUpperCase()}</button>
-          ))}
-        </div>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-}
+                    {/* Alerts Panel */}
+                    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+                        <h2 class="font-bold flex items-center gap-2 text-lg">
+                            <span>{ALERTS[0].icon}</span> Critical Action Required
+                        </h2>
+                        <p class="text-sm mt-1"><strong>{ALERTS[0].name}</strong>: {ALERTS[0].desc}</p>
+                    </div>
 
-// ====== 3. MAIN DASHBOARD PAGE ======
-function DashboardPage({ onNavigate }) {
-  return (
-    <div className="fade-in">
-      <div className="grid-2" style={{ marginBottom: '20px' }}>
-        <div className="card">
-          <div className="card-title">Monthly Overview – June 2026</div>
-        </div>
-        <div className="card">
-          <div className="card-title">Upcoming Appointments – Next 7 Days</div>
-        </div>
-      </div>
-    </div>
-  );
-}
+                    {/* Quick Stats */}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div class="bg-white p-4 rounded-xl shadow-xs border border-gray-100">
+                            <div class="text-2xl mb-1">{STATS[0].icon}</div>
+                            <div class="text-sm text-gray-500">{STATS[0].label}</div>
+                            <div class="text-2xl font-bold">{STATS[0].val}</div>
+                            <div class="text-xs text-green-600 font-medium mt-1">{STATS[0].change}</div>
+                        </div>
+                    </div>
 
-// ====== 4. MOTHERS MANAGEMENT PAGE ======
-function MothersPage() {
-  const [search, setSearch] = React.useState("");
-  const [showAdd, setShowAdd] = React.useState(false);
+                    {/* Patient List Table */}
+                    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
+                        <div class="p-4 bg-gray-50 border-b border-gray-100 font-semibold text-gray-700">
+                            Active Maternal Records
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            {MOTHERS_DATA.map(mother => (
+                                <div key={mother.id} class="p-4 flex justify-between items-center hover:bg-gray-50 transition">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">{mother.name}</h3>
+                                        <p class="text-xs text-gray-500">ID: {mother.id} | Phone: {mother.phone}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-block bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded-full font-medium">
+                                            {mother.status}
+                                        </span>
+                                        <p class="text-xs text-gray-400 mt-1">EDD: {mother.edd}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-  const filtered = MOTHERS_DATA.filter(m => 
-    m.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="fade-in">
-      <div className="section-hd">
-        <h2>Maternal Health Registry</h2>
-        <button onClick={() => setShowAdd(true)}>+ Register Mother</button>
-      </div>
-      <div className="card">
-        <table className="data-table">
-          <thead>
-            <tr><th>ID</th><th>Name</th><th>EDD</th><th>Status</th></tr>
-          </thead>
-          <tbody>
-            {filtered.map(m => (
-              <tr key={m.id}><td>{m.id}</td><td>{m.name}</td><td>{m.edd}</td><td>{m.status}</td></tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {showAdd && <AddMotherModal onClose={() => setShowAdd(false)} onAdd={() => {}} />}
-    </div>
-  );
-}
-
-// ====== 5. CHILDREN MANAGEMENT PAGE ======
-function ChildrenPage() {
-  const [search, setSearch] = React.useState("");
-  const filtered = CHILDREN_DATA.filter(c => 
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="fade-in">
-      <div className="section-hd">
-        <h2>Child Health Registry</h2>
-      </div>
-      <div className="card">
-        {/* Children data table mapping */}
-      </div>
-    </div>
-  );
-}
+        // Render the app to the screen
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
